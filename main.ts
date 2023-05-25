@@ -1,5 +1,5 @@
 
-import { Crawler } from "./Crawler";
+import { Crawler } from "./src/Crawler";
 
 
 (() => {
