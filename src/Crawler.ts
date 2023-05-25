@@ -1,7 +1,15 @@
 import { Octokit } from 'octokit';
 
+function formatDate(string: string): string {
+    const date = new Date(string)
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDay()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.000000+0000`
+}
+
+
 export interface ProjectMetadata {
-    version: string;
+    id: number,
+    versionTime: string,
+    versionHash: string,
     license: string;
     name: string;
     url: string;
@@ -106,8 +114,12 @@ export default class Crawler {
             repo: repo.name
         });
 
+        data.pushed_at
+
         const metadata: ProjectMetadata = {
-            version: data.pushed_at,
+            id: data.id,
+            versionTime: formatDate(data.pushed_at),
+            versionHash: "",
             license: data.license ? data.license.name : "",
             name: data.name,
             url: data.html_url,
