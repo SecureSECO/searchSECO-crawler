@@ -1,4 +1,4 @@
-import { Crawler } from "../src/Crawler";
+import Crawler from "../src/Crawler";
 
 describe('Crawler', () => {
     let crawler: Crawler;
