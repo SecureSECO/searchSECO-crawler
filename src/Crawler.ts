@@ -1,6 +1,6 @@
 import { Octokit } from 'octokit';
 
-interface ProjectMetadata {
+export interface ProjectMetadata {
     version: string;
     license: string;
     name: string;
@@ -10,7 +10,7 @@ interface ProjectMetadata {
     defaultBranch: string;
 }
 
-interface CrawlData {
+export interface CrawlData {
     URLImportanceList: Array<{ url: string, importance: number, finalProjectId: number }>;
     languages: LanguageCount;
     finalProjectId: number;
@@ -20,7 +20,7 @@ interface LanguageCount {
     [key: string]: number;
 }
 
-export class Crawler {
+export default class Crawler {
     private octo: Octokit;
     private repoPerPage: number;
     private maxRepos: number;
