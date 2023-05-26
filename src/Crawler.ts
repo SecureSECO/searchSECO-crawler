@@ -121,12 +121,10 @@ export default class Crawler {
             repo: repo.name,
             ref: data.default_branch
         });
-    
+
         const userData = await this.octo.rest.users.getByUsername({
             username: data.owner.login
-        });    
-
-        data.pushed_at
+        });
 
         const metadata: ProjectMetadata = {
             id: data.id,
