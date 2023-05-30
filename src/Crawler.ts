@@ -1,4 +1,5 @@
 import { Octokit } from 'octokit';
+import Logger from './searchSECO-logger/src/Logger';
 
 function formatDate(string: string): string {
     const date = new Date(string)
@@ -108,13 +109,24 @@ export default class Crawler {
      * Retrieves metadata per repository.
      * @param repo Repository to extract data from
      */
-    public async getProjectMetadata(repo: any): Promise<ProjectMetadata> {
-        const { data } = await this.octo.rest.repos.get({
-            owner: repo.owner.login,
-            repo: repo.name
-        });
+    public async getProjectMetadata(project: any): Promise<ProjectMetadata> {
+        let owner: string = ''
+        let repo: string = ''
 
-        data.pushed_at
+        if (typeof project === "string") {
+            const [_, _owner, _repo] = project.replace('https://', '').split('/')
+            owner = _owner
+            repo = _repo
+        }
+        else {
+            owner = project.owner.login
+            repo = project.name
+        }
+
+        const { data } = await this.octo.rest.repos.get({
+            owner,
+            repo
+        });
 
         const metadata: ProjectMetadata = {
             id: data.id,
