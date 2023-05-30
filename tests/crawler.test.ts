@@ -31,8 +31,11 @@ describe('Crawler', () => {
         it('should retrieve the project metadata (per repo) successfully', async () => {
             const metadata = await crawler.getProjectMetadata(repo);
 
+            console.log(JSON.stringify(metadata, null, 2));
+
             // Check structure
-            expect(metadata).toHaveProperty('version');
+            expect(metadata).toHaveProperty('versionTime');
+            expect(metadata).toHaveProperty('versionHash');
             expect(metadata).toHaveProperty('license');
             expect(metadata).toHaveProperty('name');
             expect(metadata).toHaveProperty('url');

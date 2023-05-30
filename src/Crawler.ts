@@ -107,6 +107,8 @@ export default class Crawler {
 
     /**
      * Retrieves metadata per repository.
+     * Version hash and author mail require extra requests.
+     * Author mail is only available if the user has made it public.
      * @param repo Repository to extract data from
      */
     public async getProjectMetadata(project: any): Promise<ProjectMetadata> {
@@ -128,15 +130,25 @@ export default class Crawler {
             repo
         });
 
+        const commitData = await this.octo.rest.repos.getCommit({
+            owner: repo.owner.login,
+            repo: repo.name,
+            ref: data.default_branch
+        });
+
+        const userData = await this.octo.rest.users.getByUsername({
+            username: data.owner.login
+        });
+
         const metadata: ProjectMetadata = {
             id: data.id,
             versionTime: formatDate(data.pushed_at),
-            versionHash: "",
+            versionHash: commitData.data.sha,
             license: data.license ? data.license.name : "",
             name: data.name,
             url: data.html_url,
             authorName: data.owner.login,
-            authorMail: "",
+            authorMail: userData.data.email || "",
             defaultBranch: data.default_branch,
         };
 
