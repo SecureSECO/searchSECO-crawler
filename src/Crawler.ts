@@ -131,8 +131,8 @@ export default class Crawler {
         });
 
         const commitData = await this.octo.rest.repos.getCommit({
-            owner: repo.owner.login,
-            repo: repo.name,
+            owner,
+            repo,
             ref: data.default_branch
         });
 
