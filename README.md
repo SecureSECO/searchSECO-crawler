@@ -27,8 +27,8 @@ The primary responsibilities of the Crawler are:
 
 ## Usage
 
-The Spider primarily serves as a submodule within the Miner. For detailed
-instructions on integrating and utilizing the Spider in your system, please refer
+The Crawler primarily serves as a submodule within the Miner. For detailed
+instructions on integrating and utilizing the Crawler in your system, please refer
 to the [SearchSECO Miner documentation](https://github.com/SecureSECODAO/searchSECO-miner).
 
 ## License
