@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Octokit } from 'octokit';
-import Logger from './searchSECO-logger/src/Logger';
 
 function formatDate(string: string): string {
     const date = new Date(string)
@@ -34,7 +34,7 @@ export default class Crawler {
     private repoPerPage: number;
     private maxRepos: number;
 
-    constructor(token: string, repoPerPage: number = 100, maxRepos: number = 5) {
+    constructor(token: string, repoPerPage = 100, maxRepos = 5) {
         this.octo = new Octokit({ auth: token });
         this.repoPerPage = repoPerPage;
         this.maxRepos = maxRepos;
@@ -69,7 +69,7 @@ export default class Crawler {
         const languages: LanguageCount = {};
 
         let page = 1;
-        let finalProjectId: number = 0;
+        let finalProjectId = 0;
 
         let totalProcessedRepos = 0;
         while (totalProcessedRepos < this.maxRepos) {
@@ -112,11 +112,11 @@ export default class Crawler {
      * @param repo Repository to extract data from
      */
     public async getProjectMetadata(project: any): Promise<ProjectMetadata> {
-        let owner: string = ''
-        let repo: string = ''
+        let owner = ''
+        let repo = ''
 
         if (typeof project === "string") {
-            const [_, _owner, _repo] = project.replace('https://', '').split('/')
+            const [, _owner, _repo] = project.replace('https://', '').split('/')
             owner = _owner
             repo = _repo
         }

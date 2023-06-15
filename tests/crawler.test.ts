@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Crawler from "../src/Crawler";
 
 describe('Crawler', () => {
