@@ -3,7 +3,7 @@
 The Crawler, a key component of the SearchSECO project, is designed for identifying
 relevant projects for further processing. It operates by exploring code repositories
 and returning URLs, which are subsequently processed by the Spider. In
-addition, the Crawler retrieves crucial metadata related to each project, such as
+addition, the Crawler retrieves metadata related to each project, such as
 the project owner's name and email.
 
 ## Functionality
@@ -27,8 +27,8 @@ The primary responsibilities of the Crawler are:
 
 ## Usage
 
-The Spider primarily serves as a submodule within the Miner. For detailed
-instructions on integrating and utilizing the Spider in your system, please refer
+The Crawler primarily serves as a submodule within the Miner. For detailed
+instructions on integrating and utilizing the Crawler in your system, please refer
 to the [SearchSECO Miner documentation](https://github.com/SecureSECODAO/searchSECO-miner).
 
 ## License
