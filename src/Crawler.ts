@@ -142,7 +142,7 @@ export default class Crawler {
 
         const metadata: ProjectMetadata = {
             id: data.id,
-            versionTime: formatDate(data.pushed_at),
+            versionTime: new Date(data.pushed_at).getTime().toString(),
             versionHash: commitData.data.sha,
             license: data.license ? data.license.name : "",
             name: data.name,
