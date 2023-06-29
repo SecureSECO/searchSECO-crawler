@@ -1,6 +1,6 @@
 /**
  * This program has been developed by students from the bachelor Computer Science at Utrecht University within the Software Project course.
- * © Copyright Utrecht University (Department of Information and Computing Sciences)
+ * ï¿½ Copyright Utrecht University (Department of Information and Computing Sciences)
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,4 +8,4 @@
 
 // Override with local test environment variables if they exist
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-require("dotenv").config({ path: `.env.test.local`, override: true });
+require('dotenv').config({ path: `.env.test.local`, override: true });
