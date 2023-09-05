@@ -128,9 +128,7 @@ export default class Crawler {
 		let repo = '';
 
 		if (typeof project === 'string') {
-			const [, _owner, _repo] = project.replace('https://', '').split('/');
-			owner = _owner;
-			repo = _repo;
+			[, owner, repo] = project.replace('https://', '').split('/');
 		} else {
 			owner = project.owner.login;
 			repo = project.name;
