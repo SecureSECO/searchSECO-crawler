@@ -134,11 +134,13 @@ export default class Crawler {
 			repo = project.name;
 		}
 
-		const { data } = await this.octo.rest.repos.get({
+		const response = await this.octo.rest.repos.get({
 			owner,
 			repo,
 		});
+		if (response.status != 200) throw response
 
+		const { data } = response
 		const commitData = await this.octo.rest.repos.getCommit({
 			owner,
 			repo,
