@@ -8,6 +8,10 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Octokit } from 'octokit';
+import { promisify } from 'util';
+import { exec } from 'child_process';
+
+
 
 export interface ProjectMetadata {
 	id: number;
@@ -126,12 +130,15 @@ export default class Crawler {
 	public async getProjectMetadata(project: any): Promise<ProjectMetadata> {
 		let owner = '';
 		let repo = '';
+		let url = '';
 
 		if (typeof project === 'string') {
 			[, owner, repo] = project.replace('https://', '').split('/');
+			url = project;
 		} else {
 			owner = project.owner.login;
 			repo = project.name;
+			url = 'https://github.com/' + owner + '/' + repo;
 		}
 
 		const response = await this.octo.rest.repos.get({
@@ -150,9 +157,12 @@ export default class Crawler {
 		const userData = await this.octo.rest.users.getByUsername({
 			username: data.owner.login,
 		});
-
+		let id = 0;
+		let exec2 = promisify(exec);
+		let { stdout, stderr } = await exec2(`seseco_pid1 ${url}`)
+		id = Number(stdout);
 		const metadata: ProjectMetadata = {
-			id: data.id,
+			id: id,
 			versionTime: new Date(data.pushed_at).getTime().toString(),
 			versionHash: commitData.data.sha,
 			license: data.license ? data.license.name : '',

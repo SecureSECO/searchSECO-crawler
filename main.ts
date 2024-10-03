@@ -6,6 +6,19 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+//import Crawler from './src/Crawler';
+import Crawler, { CrawlData, ProjectMetadata } from './src/Crawler';
+
 (() => {
 	console.log('Crawler is operational.');
 })();
+
+async function test1() {
+	let c = new Crawler('a-Github-token-here');
+	let metadata = await c.getProjectMetadata('https://github.com/zeromq/libzmq');
+	console.log(JSON.stringify(metadata));
+}
+
+test1();
+
+
