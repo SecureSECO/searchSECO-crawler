@@ -15,7 +15,7 @@ import { exec } from 'child_process';
 
 export interface ProjectMetadata {
 	id: number;
-	versionTime: string;
+	versionTime: number;
 	versionHash: string;
 	license: string;
 	name: string;
@@ -163,7 +163,7 @@ export default class Crawler {
 		id = Number(stdout);
 		const metadata: ProjectMetadata = {
 			id: id,
-			versionTime: new Date(data.pushed_at).getTime().toString(),
+			versionTime: new Date(data.pushed_at).getTime(),
 			versionHash: commitData.data.sha,
 			license: data.license ? data.license.name : '',
 			name: data.name,
