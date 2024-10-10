@@ -7,10 +7,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-  working-directory: ./cpp
+  
   build:
-
+    
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cpp
 
     steps:
     - uses: actions/checkout@v4
