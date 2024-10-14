@@ -30,6 +30,9 @@ jobs:
 
       - name: Build the project
         run: npm run build
+      
+      - name: Make and install helper program
+        run: cd cpp; make install; echo "$HOME/bin" >> "$GITHUB_PATH"
 
       - name: Execute SearchSECO-crawler
         env:
