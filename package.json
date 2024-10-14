@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --forceExit --detectOpenHandles",
+    "execute": "node --no-warnings --max-old-space-size=8192 dist/main.js",
     "build": "npm run build-ts",
     "build-ts": "tsc"
   },
