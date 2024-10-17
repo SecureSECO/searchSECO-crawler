@@ -16,14 +16,14 @@ import Crawler, { CrawlData, ProjectMetadata } from './src/Crawler';
 async function test1() {
 	let token = process.env.GITHUB_TOKEN;
 	if (!token) {
-		process.exitCode=1;
+		process.exitCode = 1;
 	} else {
-	    let c = new Crawler(token);
-	    let metadata = await c.getProjectMetadata('https://github.com/zeromq/libzmq');
-	    console.log(JSON.stringify(metadata));
-	    let repos = await c.crawl();
-	    console.log(JSON.stringify(repos));
-	    process.exitCode=0;
+		let c = new Crawler(token);
+		let metadata = await c.getProjectMetadata('https://github.com/zeromq/libzmq');
+		console.log(JSON.stringify(metadata));
+		let repos = await c.crawl();
+		console.log(JSON.stringify(repos));
+		process.exitCode = 0;
 	}
 }
 
