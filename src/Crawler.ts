@@ -11,7 +11,47 @@ import { Octokit } from 'octokit';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 
+const LANGUAGES = ['Python', 'JavaScript', 'Java', 'C++', 'C', 'C#'];
 
+function getRandomInt(min: number, max: number): number {
+	const minCeiled = Math.ceil(min);
+	const maxFloored = Math.floor(max);
+	return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+}
+
+function msecToDateStr(time: number): string {
+	return new Date(time).toISOString().substring(0, 10);
+}
+
+// Compute a random query for use in a Github api repository search.
+// We choose a random language, range of stars and period of last push.
+// The precise choices for the parameters are not thoroughly researched,
+//  but rather random with a tiny bit of testing and intuition.
+// For background, see
+// https://docs.github.com/en/search-github/searching-on-github/searching-for-repositories
+
+function getQuery(): string {
+	const MAXSTAR = 4000;
+	const MAXDAYSBACK = 2000;
+	const MSECINDAY = 1000 * 60 * 60 * 24;
+	// The language of the repository
+	let langIdx = getRandomInt(0, LANGUAGES.length);
+	let lang = LANGUAGES[langIdx];
+	// The number of stars the repository must have
+	// We choose a relatively big chance for choosing a repository with maximum stars
+	// namely 40/(MAXSTAR-201), about 1%
+	let starsMax = getRandomInt(201, MAXSTAR + 40);
+	let stars = starsMax >= MAXSTAR ? `>=${MAXSTAR}` : `${starsMax - 200}..${starsMax}`;
+	// The date of the last push to the repository
+	let maxTime = Date.now() - getRandomInt(0, MAXDAYSBACK) * MSECINDAY;
+	let minTime = maxTime - 100 * MSECINDAY;
+	let maxDate = msecToDateStr(maxTime);
+	let minDate = msecToDateStr(minTime);
+	let pushdates = `${minDate}..${maxDate}`;
+	// Construct the query string
+	let result = `stars:${stars} language:${lang} pushed:${pushdates}`;
+	return result;
+}
 
 export interface ProjectMetadata {
 	id: number;
@@ -35,6 +75,8 @@ export interface CrawlData {
 	finalProjectId: number;
 }
 
+
+
 interface LanguageCount {
 	[key: string]: number;
 }
@@ -44,7 +86,7 @@ export default class Crawler {
 	private repoPerPage: number;
 	private maxRepos: number;
 
-	constructor(token: string, repoPerPage = 100, maxRepos = 5) {
+	constructor(token: string, repoPerPage = 100, maxRepos = 100) {
 		this.octo = new Octokit({ auth: token });
 		this.repoPerPage = repoPerPage;
 		this.maxRepos = maxRepos;
@@ -54,15 +96,23 @@ export default class Crawler {
 	 * Return repos based on the query.
 	 * @param page Page number to get repos from
 	 */
-	public async getRepos(page: number): Promise<any> {
+	// A repository_search_url looks like:
+	// "https://api.github.com/search/repositories?q={query}{&page,per_page,sort,order}"
+	// e.g: https://api.github.com/search/repositories?q=sort=stars&per_page=100&q=stars:3000..10000 pushed:>2023-08-27
+	public async getRepos(page: number, query: string): Promise<any> {
 		return await this.octo.request('GET /search/repositories', {
-			q: 'fork: false', // Replace with an actual query? Maybe date?
+			q: query,
 			sort: 'stars',
 			order: 'desc',
 			per_page: this.repoPerPage,
 			page: page,
 		});
 	}
+
+
+
+
+
 
 	private async getLanguages(url: string): Promise<LanguageCount> {
 		const res = await this.octo.request(`GET ${url}`);
@@ -75,6 +125,7 @@ export default class Crawler {
 	 * Importance is currently measured as stargazer count.
 	 */
 	public async crawl(): Promise<CrawlData> {
+		// console.log('in crawl');
 		const URLImportanceList: Array<{
 			url: string;
 			importance: number;
@@ -82,39 +133,47 @@ export default class Crawler {
 		}> = [];
 		const languages: LanguageCount = {};
 
-		let page = 1;
+
+
+
 		let finalProjectId = 0;
 
 		let totalProcessedRepos = 0;
 		while (totalProcessedRepos < this.maxRepos) {
-			try {
-				const repos = await this.getRepos(page);
-				//console.log(repos.data.items);
-				if (repos.data.items.length === 0) break;
-				totalProcessedRepos += repos.data.items.length;
-				const promises = repos.data.items.map(async (repo: any) => {
-					const url = repo.html_url;
-					const importance = repo.stargazers_count;
-					const projectId = repo.id;
+			let query = getQuery();
+			// console.log(`query: ${query}`);
+			let page = 1;
+			while (totalProcessedRepos < this.maxRepos) {
+				try {
+					const repos = await this.getRepos(page, query);
+					// console.log(`found ${repos.data.items.length} items`);
 
-					URLImportanceList.push({
-						url,
-						importance,
-						finalProjectId: projectId,
+					totalProcessedRepos += repos.data.items.length;
+					const promises = repos.data.items.map(async (repo: any) => {
+						const url = repo.html_url;
+						const importance = repo.stargazers_count;
+						const projectId = repo.id;
+
+						URLImportanceList.push({
+							url,
+							importance,
+							finalProjectId: projectId,
+						});
+						finalProjectId = projectId;
+
+						const repoLanguages = await this.getLanguages(repo.languages_url);
+						for (const lang in repoLanguages) {
+							languages[lang] = languages[lang] ? languages[lang] + 1 : 1;
+						}
 					});
-					finalProjectId = projectId;
 
-					const repoLanguages = await this.getLanguages(repo.languages_url);
-					for (const lang in repoLanguages) {
-						languages[lang] = languages[lang] ? languages[lang] + 1 : 1;
-					}
-				});
-
-				await Promise.all(promises);
-				page++;
-			} catch (e) {
-				console.log(e);
-				break;
+					await Promise.all(promises);
+					if (repos.data.items.length < this.repoPerPage) break;
+					page++;
+				} catch (e) {
+					console.log(e);
+					break;
+				}
 			}
 		}
 
