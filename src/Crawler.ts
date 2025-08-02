@@ -10,6 +10,7 @@
 import { Octokit } from 'octokit';
 import { promisify } from 'util';
 import { exec } from 'child_process';
+import Logger, { Verbosity } from './searchSECO-logger/src/Logger';
 
 const LANGUAGES = ['Python', 'JavaScript', 'Java', 'C++', 'C', 'C#'];
 
@@ -231,6 +232,8 @@ export default class Crawler {
 			authorMail: userData.data.email || '',
 			defaultBranch: data.default_branch,
 		};
+		
+		Logger.Info(`Project License Info: ${metadata.license}`, Logger.GetCallerLocation());
 
 		return metadata;
 	}

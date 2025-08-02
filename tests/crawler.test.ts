@@ -14,14 +14,18 @@ describe('Crawler', () => {
 	let repo: any;
 
 	beforeAll(async () => {
-		crawler = new Crawler(process.env.GITHUB_ACCESS_TOKEN || '', 100, 5);
+	crawler = new Crawler(process.env.GITHUB_ACCESS_TOKEN || '', 100, 5);
 
-		// Fetch some repos for testing
-		const repos = await crawler.getRepos(1);
-		// Use first repo for testing
-		repo = repos.data.items[0];
+	// Provide a valid query string (e.g., repos with 1000+ stars pushed recently)
+	const query = 'stars:>=1000 pushed:>2024-01-01';
+	
+	// Fetch repos with the query
+	const repos = await crawler.getRepos(1, query);
+
+	// Use the first repo for testing
+	repo = repos.data.items[0];
 	});
-
+	
 	describe('crawlData', () => {
 		it('should retrieve the crawl data (global) successfully', async () => {
 			const crawlData = await crawler.crawl();

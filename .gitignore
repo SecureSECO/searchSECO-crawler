@@ -128,3 +128,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# cpp untracked
+cpp/make_project_hash.o
+cpp/md5.o
+cpp/seseco_pid1
